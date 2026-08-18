@@ -8,7 +8,34 @@ Starting with v2.48, UCM uses Major.Build versioning (e.g., 2.48, 2.49). Earlier
 ---
 
 
-## [Unreleased]
+## [2.212] - 2026-08-17
+
+### Added
+- API keys: proper revoke/delete lifecycle — revoke an active key, permanently delete a revoked or expired one; expired keys no longer count against the per-user limit; "Last used" now shown in the account page (#291, contributed by @Hemsby)
+- ACME local domains: bare private TLDs (e.g. `local`, `internal`) can now be registered, covering all their subdomains through the existing parent matching (#290, contributed by @gb-123-git)
+
+### Fixed
+- ACME server: http-01 validation now follows HTTP redirects (RFC 8555 §8.3) — a site-wide http→https 301 on the challenge path no longer fails with "Key authorization mismatch". Up to 5 hops, http/https on default ports only, TLS not verified on https hops (the target usually serves the certificate being renewed), and every hop re-vetted by the SSRF policy (cloud metadata always refused; targets resolved, vetted and pinned when private IPs are disallowed)
+- Deleting a certificate (single or bulk) or a CA now removes its cert/key/csr files on disk instead of leaving them orphaned (#289, contributed by @Hemsby)
+- `app.config['DATA_DIR']` is now set, so the session cleanup task no longer silently falls back to the default data directory on custom layouts (#290, contributed by @gb-123-git)
+
+## [2.211] - 2026-08-15
+
+### Added
+- Certificates: mutable display name independent from the CN — rename from the certificates list, defaults to CN or first SAN DNS name for CN-less certificates (CA/B Forum profiles, Let's Encrypt tlsserver/shortlived), shown in lists and selectors with the key type to distinguish otherwise identical certificates (#286)
+
+### Fixed
+- Packaging: DEB/RPM upgrades no longer silently drop manually installed Kerberos extras (`requests-kerberos`, `pyspnego[kerberos]`) when rebuilding the virtualenv — they are detected before the rebuild and reinstalled after (#287, contributed by @Hemsby)
+
+## [2.210] - 2026-08-14
+
+### Added
+- ACME client accounts: multiple accounts can share the same CA directory URL — administrative separation for dns-persist-01 and multi-domain setups (#276)
+- DNS providers: Tencent Cloud DNSPod (#284, contributed by @wxtewx)
+
+### Fixed
+- ACME CA account form: the directory URL field is no longer marked required, and an empty URL defaults to Let's Encrypt Production — the helper text and the form now agree (#276)
+- ACME account key import now documents the accepted legacy PEM envelopes — SEC1/X9.62 (BEGIN EC PRIVATE KEY) and PKCS#1 (BEGIN RSA PRIVATE KEY) already worked but the UI/helper only mentioned PKCS#8 (#285)
 
 ## [2.209] - 2026-08-14
 
